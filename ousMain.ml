@@ -148,6 +148,8 @@ end
 let editors = [
   (module Emacs: EditorConfig);
   (module Vim: EditorConfig);
+  (module Gedit: EditorConfig);
+  (module Sublime: EditorConfig);
 ]
 
 let link_file ?(remove=false) (opam_file,filename) =
