@@ -21,3 +21,6 @@ val lines_of_command: string -> lines
 
 (** Writes a list of line to a file *)
 val lines_to_file: lines -> string -> unit
+
+(** Query OPAM for a variable (see 'opam config list') *)
+val opam_var: string -> string

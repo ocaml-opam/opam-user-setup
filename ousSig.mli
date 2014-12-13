@@ -41,7 +41,8 @@ module type EditorConfig = sig
   val base_setup : (filename * file_chunk) list
 
   (** These are configuration files that need to be included somewhere in the
-      file tree. They'll be watermarked to detect user changes. *)
+      file tree. They will be linked whenever possible and are not supposed to
+      be changed by the user. *)
   val files : (opam_filename * filename) list
 
   (** Transforms a single line for inclusion as comment in a config file *)

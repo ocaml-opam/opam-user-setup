@@ -63,10 +63,7 @@ let base_template = [".emacs", lines_of_string {elisp|
 
 let dot_emacs_chunk =
   let def_loadpath =
-    let share = match lines_of_command "opam config var share" with
-      | [share] -> share
-      | _ -> failwith "Bad answer from 'opam config var share"
-    in
+    let share = opam_var "share" in
     Printf.sprintf "(add-to-list 'load-path \"%s/emacs/site-lisp\")" share
   in
   let def_env =

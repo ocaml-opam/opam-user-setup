@@ -36,3 +36,9 @@ let lines_to_file lines f =
   let oc = open_out f in
   List.iter (fun line -> output_string oc line; output_char oc '\n') lines;
   close_out oc
+
+let opam_var v =
+  let cmd = Printf.sprintf "opam config var %s" v in
+  match lines_of_command cmd with
+  | [value] -> value
+  | _ -> failwith (Printf.sprintf "Bad answer from '%s'" cmd)

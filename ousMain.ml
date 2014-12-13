@@ -6,6 +6,8 @@ let home =
   try Sys.getenv "HOME"
   with Not_found -> failwith "Could not get the HOME variable"
 
+let opam_prefix = opam_var "prefix"
+
 (** Handles addition, removal and update of chunks within config files *)
 module Chunk(Editor: EditorConfig) = struct
 
@@ -136,7 +138,7 @@ module Chunk(Editor: EditorConfig) = struct
               tool filename;
           aux tools_chunks_list (List.rev_append changes acc) lines
         with Not_found ->
-          msg "Manually changed config for %s, which is not found, in %s: leaving as is"
+          msg "Manually changed config for %s in %s: leaving as is"
             tool filename;
           aux tools_chunks_list (List.rev_append changes acc) lines
     in
@@ -146,6 +148,22 @@ end
 let editors = [
   (module Emacs: EditorConfig);
 ]
+
+let link_file ?(remove=false) (opam_file,filename) =
+  let src = opam_prefix/opam_file in
+  let dst = home/filename in
+  let islink f =
+    try (Unix.stat f).Unix.st_kind = Unix.S_LNK with Unix.Unix_error _ -> false
+  in
+  if islink dst then Unix.unlink dst;
+  if not (Sys.file_exists dst) && not remove then Unix.link src dst
+
+let tool_name t =
+  let module T = (val t: ToolConfig) in T.name
+let tool_files t =
+  let module T = (val t: ToolConfig) in T.files
+let tool_chunks t =
+  let module T = (val t: ToolConfig) in T.chunks
 
 let () =
   let args = match Array.to_list Sys.argv with _::l -> l | [] -> [] in
@@ -157,52 +175,47 @@ let () =
     msg "Usage: %s [--remove] [tool names]" Sys.argv.(0);
     exit 2
   );
-  editors |> List.iter (fun e ->
-      let module E = (val e: EditorConfig) in
-      let tools =
-        if remove then E.tools else
-          List.filter (fun t ->
-              let module T = (val t: ToolConfig) in
-              List.mem T.name tool_names)
-            E.tools
-      in
-      if List.length tools < List.length tool_names then
-        msg "Warning: some unrecognised tool names in %S for %s"
-          (String.concat " " tool_names) E.name;
-      if not remove then
-        E.base_template |> List.iter (fun (filename, lines) ->
-            let f = home/filename in
-            if not (Sys.file_exists f) then
-              (msg "Installing new config file template for %s at %s"
-                 E.name f;
-               lines_to_file lines f));
-      let _files = (* todo *)
-        List.concat
-          (E.files::
-           List.map (fun t -> let module T = (val t: ToolConfig) in T.files)
-             tools)
-      in
-      let add_chunks chunks tool list =
-        list |> List.fold_left (fun chunks (filename, chk) ->
-            let tc =
-              if remove then [] else
-              try (tool,chk) :: StringMap.find filename chunks
-              with Not_found -> [tool,chk]
-            in
-            StringMap.add filename tc chunks)
-          chunks
-      in
-      let chunks =
-        E.base_setup |> add_chunks StringMap.empty "base" in
-      let chunks =
-        tools |> List.fold_left (fun chunks t ->
-            let module T = (val t: ToolConfig) in
-            add_chunks chunks T.name T.chunks)
-          chunks
-      in
-      chunks |> StringMap.iter @@ fun filename tools_chunks_list ->
-      let f = home/filename in
-      let lines = lines_of_file f in
-      let module C = Chunk(E) in
-      let lines = C.update_chunks filename lines (List.rev tools_chunks_list) in
-      lines_to_file lines f)
+  editors |> List.iter @@ fun e ->
+  let module E = (val e: EditorConfig) in
+  let tools, remove_tools =
+    if remove then [],E.tools else
+      List.partition
+        (fun t -> List.mem (tool_name t) tool_names)
+        E.tools
+  in
+  if List.length tools < List.length tool_names then
+    msg "Warning: some unrecognised tool names in %S for %s"
+      (String.concat " " tool_names) E.name;
+  (E.base_template
+   |> List.iter @@ fun (filename, lines) ->
+   let f = home/filename in
+   if not remove && not (Sys.file_exists f) then
+     (msg "Installing new config file template for %s at %s" E.name f;
+      lines_to_file lines f));
+  E.files |> List.iter @@ link_file ~remove;
+  remove_tools |> List.map tool_files
+  |> List.iter @@ List.iter @@ link_file ~remove:true;
+  tools |> List.map tool_files
+  |> List.iter @@ List.iter @@ link_file;
+  let add_chunks ?(remove=false) tool list chunks =
+    list |> List.fold_left (fun chunks (filename, chk) ->
+        let tc = try StringMap.find filename chunks with Not_found -> [] in
+        let tc = if remove then tc else (tool,chk)::tc in
+        StringMap.add filename tc chunks)
+      chunks
+  in
+  let add_tools_chunks ?remove tools chunks =
+    List.fold_left (fun chunks t ->
+        add_chunks ?remove (tool_name t) (tool_chunks t) chunks)
+      chunks tools
+  in
+  StringMap.empty
+  |> add_chunks ~remove "base" E.base_setup
+  |> add_tools_chunks ~remove:true remove_tools
+  |> add_tools_chunks tools
+  |> StringMap.iter @@ fun filename tools_chunks_list ->
+  let f = home/filename in
+  let lines = lines_of_file f in
+  let module C = Chunk(E) in
+  let lines = C.update_chunks filename lines (List.rev tools_chunks_list) in
+  lines_to_file lines f
