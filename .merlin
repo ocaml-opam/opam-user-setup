@@ -1,3 +1,3 @@
-S emacs/ vim/
+S . emacs/ vim/
 B _build/*
 PKG unix re re.pcre

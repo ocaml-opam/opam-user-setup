@@ -83,8 +83,7 @@ let dot_emacs_chunk =
 (add-hook 'caml-mode-hook 'set-opam-env-locally)
 |elisp}
   in
-  Text (List.map (fun s -> [String s])
-          (def_loadpath :: def_env @ lines_of_string base))
+  Text (def_loadpath :: def_env @ lines_of_string base)
 
 let base_setup = [ ".emacs", dot_emacs_chunk ]
 
@@ -95,13 +94,13 @@ let comment = (^) ";; "
 
 module OcpIndent = struct
   let name = "ocp-indent"
-  let chunks = [".emacs", Text [[String "(require 'ocp-indent)"]]]
+  let chunks = [".emacs", Text ["(require 'ocp-indent)"]]
   let files = []
 end
 
 module OcpIndex = struct
   let name = "ocp-index"
-  let chunks = [".emacs", Text [[String "(require 'ocp-index)"]]]
+  let chunks = [".emacs", Text ["(require 'ocp-index)"]]
   let files = []
 end
 
@@ -115,7 +114,7 @@ module Merlin = struct
 (set 'ocp-index-use-auto-complete nil)
 (set 'merlin-use-auto-complete-mode 'easy)
 |elisp} in
-    [".emacs", Text (List.map (fun s -> [String s]) (lines_of_string config))]
+    [".emacs", Text (lines_of_string config)]
   let files = []
 end
 

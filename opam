@@ -27,3 +27,4 @@ depopts: [
   "ocp-indent"
   "ocp-index"
 ]
+available: [ ocaml-version >= "4.02" ]

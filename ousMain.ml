@@ -16,15 +16,8 @@ module Chunk(Editor: EditorConfig) = struct
   let chunk_footer_string =
     Printf.sprintf "## end of OPAM user-setup addition for %s" Editor.name
 
-  let base_lines_of_chunk variables = function
-    | Text lines ->
-      List.map (fun var_texts ->
-          String.concat "" @@
-          List.map (function
-              | String s -> s
-              | Ident i -> variables i)
-            var_texts)
-        lines
+  let base_lines_of_chunk = function
+    | Text lines -> lines
 
   let lines_md5 lines = Digest.string (String.concat "\n" lines)
 
@@ -109,12 +102,12 @@ module Chunk(Editor: EditorConfig) = struct
       in
       aux [] lines
 
-  let update_chunks filename lines variables tools_chunks_list =
+  let update_chunks filename lines tools_chunks_list =
     let current_contents = read_chunks filename lines in
     let chunk_lines tool chunk =
-      protect_lines_of_chunk tool (base_lines_of_chunk variables chunk)
+      protect_lines_of_chunk tool (base_lines_of_chunk chunk)
     in
-    let chunk_md5 chunk = lines_md5 (base_lines_of_chunk variables chunk) in
+    let chunk_md5 chunk = lines_md5 (base_lines_of_chunk chunk) in
     let take x assoc = List.assoc x assoc, List.remove_assoc x assoc in
     let rec aux tools_chunks_list acc = function
       | [] -> (* Append all remaining chunks at end *)
@@ -199,8 +192,5 @@ let () =
       let f = home/filename in
       let lines = lines_of_file f in
       let module C = Chunk(E) in
-      let lines =
-        C.update_chunks filename lines (fun _ -> "")
-          (List.rev tools_chunks_list)
-      in
+      let lines = C.update_chunks filename lines (List.rev tools_chunks_list) in
       lines_to_file lines f)
