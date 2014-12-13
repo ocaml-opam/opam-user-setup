@@ -14,10 +14,12 @@ install: [
   "ocp-index" {ocp-index:installed}
   "merlin" {merlin:installed}
 ]
-remove: [
-  [make]
-#  ["./opam-user-setup" "--remove"]
-]
+# remove: we'd need a variable to know if it's a temporary (recompile, upgrade)
+# or real removal, to decide to uninstall the chunks or not.
+# remove: [
+#   [make] {!reinstall}
+#   ["./opam-user-setup" "--remove" ] {!reinstall}
+# ]
 depends: [
   "ocamlfind" {build}
   "re"

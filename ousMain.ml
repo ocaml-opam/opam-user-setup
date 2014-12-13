@@ -148,24 +148,34 @@ let editors = [
 ]
 
 let () =
-  let tool_names = List.tl @@ Array.to_list Sys.argv in
+  let args = match Array.to_list Sys.argv with _::l -> l | [] -> [] in
+  let options,tool_names =
+    List.partition (fun s -> String.length s >= 1 && s.[0] = '-') args
+  in
+  let remove = options = ["--remove"] && tool_names = [] in
+  if not remove && options <> [] then (
+    msg "Usage: %s [--remove] [tool names]" Sys.argv.(0);
+    exit 2
+  );
   editors |> List.iter (fun e ->
       let module E = (val e: EditorConfig) in
       let tools =
-        List.filter (fun t ->
-            let module T = (val t: ToolConfig) in
-            List.mem T.name tool_names)
-          E.tools
+        if remove then E.tools else
+          List.filter (fun t ->
+              let module T = (val t: ToolConfig) in
+              List.mem T.name tool_names)
+            E.tools
       in
       if List.length tools < List.length tool_names then
         msg "Warning: some unrecognised tool names in %S for %s"
           (String.concat " " tool_names) E.name;
-      E.base_template |> List.iter (fun (filename, lines) ->
-          let f = home/filename in
-          if not (Sys.file_exists f) then
-            (msg "Installing new config file template for %s at %s"
-               E.name f;
-             lines_to_file lines f));
+      if not remove then
+        E.base_template |> List.iter (fun (filename, lines) ->
+            let f = home/filename in
+            if not (Sys.file_exists f) then
+              (msg "Installing new config file template for %s at %s"
+                 E.name f;
+               lines_to_file lines f));
       let _files = (* todo *)
         List.concat
           (E.files::
@@ -174,10 +184,12 @@ let () =
       in
       let add_chunks chunks tool list =
         list |> List.fold_left (fun chunks (filename, chk) ->
-            try StringMap.add filename
-                  ((tool,chk) :: StringMap.find filename chunks)
-                  chunks
-            with Not_found -> StringMap.add filename [tool,chk] chunks)
+            let tc =
+              if remove then [] else
+              try (tool,chk) :: StringMap.find filename chunks
+              with Not_found -> [tool,chk]
+            in
+            StringMap.add filename tc chunks)
           chunks
       in
       let chunks =
