@@ -4,6 +4,8 @@ let msg fmt = Printf.kprintf print_endline fmt
 
 let (/) = Filename.concat
 
+let (@>) f g x = g (f x)
+
 module StringMap = Map.Make(struct type t = string let compare = compare end)
 type 'a stringmap = 'a StringMap.t
 
@@ -42,3 +44,7 @@ let opam_var v =
   match lines_of_command cmd with
   | [value] -> value
   | _ -> failwith (Printf.sprintf "Bad answer from '%s'" cmd)
+
+let has_command c =
+  let cmd = Printf.sprintf "/bin/sh -c command -v %s" c in
+  try Sys.command cmd = 0 with Sys_error _ -> false

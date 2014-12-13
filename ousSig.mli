@@ -24,6 +24,12 @@ module type ToolConfig = sig
       file tree. They will be linked whenever possible and are not supposed to
       be changed by the user. *)
   val files : (opam_filename * filename) list
+
+  (** List of hooks that should be run after installation of the tool *)
+  val post_install : (unit -> unit) list
+
+  (** List of hooks that should be run before removal of the tool *)
+  val pre_remove : (unit -> unit) list
 end
 
 (** Modules implementing this signature reflect the configuration needed for a
@@ -31,6 +37,9 @@ end
 module type EditorConfig = sig
   (** The name of the editor *)
   val name : string
+
+  (** Checks if an instance of the editor is installed on the system *)
+  val check : unit -> bool
 
   (** These files are base configuration files for the given editor, the
       templates will be installed only if no configuration exists yet *)

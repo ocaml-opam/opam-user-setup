@@ -147,6 +147,7 @@ end
 
 let editors = [
   (module Emacs: EditorConfig);
+  (module Vim: EditorConfig);
 ]
 
 let link_file ?(remove=false) (opam_file,filename) =
@@ -164,6 +165,10 @@ let tool_files t =
   let module T = (val t: ToolConfig) in T.files
 let tool_chunks t =
   let module T = (val t: ToolConfig) in T.chunks
+let tool_pre_remove t =
+  let module T = (val t: ToolConfig) in T.pre_remove
+let tool_post_install t =
+  let module T = (val t: ToolConfig) in T.post_install
 
 let () =
   let args = match Array.to_list Sys.argv with _::l -> l | [] -> [] in
@@ -177,6 +182,7 @@ let () =
   );
   editors |> List.iter @@ fun e ->
   let module E = (val e: EditorConfig) in
+  if not (E.check ()) then () else
   let tools, remove_tools =
     if remove then [],E.tools else
       List.partition
@@ -186,6 +192,7 @@ let () =
   if List.length tools < List.length tool_names then
     msg "Warning: some unrecognised tool names in %S for %s"
       (String.concat " " tool_names) E.name;
+  remove_tools |> List.iter @@ tool_pre_remove @> List.iter (fun f -> f ());
   (E.base_template
    |> List.iter @@ fun (filename, lines) ->
    let f = home/filename in
@@ -193,10 +200,8 @@ let () =
      (msg "Installing new config file template for %s at %s" E.name f;
       lines_to_file lines f));
   E.files |> List.iter @@ link_file ~remove;
-  remove_tools |> List.map tool_files
-  |> List.iter @@ List.iter @@ link_file ~remove:true;
-  tools |> List.map tool_files
-  |> List.iter @@ List.iter @@ link_file;
+  remove_tools |> List.iter @@ tool_files @> List.iter @@ link_file ~remove:true;
+  tools |> List.iter @@ tool_files @> List.iter @@ link_file;
   let add_chunks ?(remove=false) tool list chunks =
     list |> List.fold_left (fun chunks (filename, chk) ->
         let tc = try StringMap.find filename chunks with Not_found -> [] in
@@ -213,9 +218,10 @@ let () =
   |> add_chunks ~remove "base" E.base_setup
   |> add_tools_chunks ~remove:true remove_tools
   |> add_tools_chunks tools
-  |> StringMap.iter @@ fun filename tools_chunks_list ->
-  let f = home/filename in
-  let lines = lines_of_file f in
-  let module C = Chunk(E) in
-  let lines = C.update_chunks filename lines (List.rev tools_chunks_list) in
-  lines_to_file lines f
+  |> StringMap.iter @@ (fun filename tools_chunks_list ->
+      let f = home/filename in
+      let lines = lines_of_file f in
+      let module C = Chunk(E) in
+      let lines = C.update_chunks filename lines (List.rev tools_chunks_list) in
+      lines_to_file lines f);
+  tools |> List.iter @@ tool_post_install @> List.iter (fun f -> f ());

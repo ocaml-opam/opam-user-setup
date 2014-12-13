@@ -6,6 +6,9 @@ val msg : ('a, unit, string, unit) format4 -> 'a
 (** Filename concat *)
 val (/): string -> string -> string
 
+(** Reverse composition *)
+val (@>): ('a -> 'b) -> ('b -> 'c) -> ('a -> 'c)
+
 module StringMap: Map.S with type key = string
 type 'a stringmap = 'a StringMap.t
 
@@ -24,3 +27,6 @@ val lines_to_file: lines -> string -> unit
 
 (** Query OPAM for a variable (see 'opam config list') *)
 val opam_var: string -> string
+
+(** Checks if the given command is available on the system *)
+val has_command: string -> bool

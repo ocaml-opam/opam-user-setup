@@ -4,6 +4,8 @@ open OusMisc
 
 let name = "emacs"
 
+let check () = has_command "emacs"
+
 let base_template = [".emacs", lines_of_string {elisp|
 ;; Basic .emacs with a good set of defaults, to be used as template for usage
 ;; with OCaml, OPAM, and tuareg
@@ -92,13 +94,19 @@ let comment = (^) ";; "
 module OcpIndent = struct
   let name = "ocp-indent"
   let chunks = [".emacs", Text ["(require 'ocp-indent)"]]
+  (* Note: we add the opam dir to the search-path rather than link the files
+     (e.g. to ~/.emacs.d/site-lisp). Not sure which is best *)
   let files = []
+  let post_install = []
+  let pre_remove = []
 end
 
 module OcpIndex = struct
   let name = "ocp-index"
   let chunks = [".emacs", Text ["(require 'ocp-index)"]]
   let files = []
+  let post_install = []
+  let pre_remove = []
 end
 
 module Merlin = struct
@@ -108,11 +116,13 @@ module Merlin = struct
 (require 'merlin)
 (add-hook 'tuareg-mode-hook 'merlin-mode t)
 (add-hook 'caml-mode-hook 'merlin-mode t)
-(set 'ocp-index-use-auto-complete nil)
-(set 'merlin-use-auto-complete-mode 'easy)
+(set-default 'ocp-index-use-auto-complete nil)
+(set-default 'merlin-use-auto-complete-mode 'easy)
 |elisp} in
     [".emacs", Text (lines_of_string config)]
   let files = []
+  let post_install = []
+  let pre_remove = []
 end
 
 let tools = [
