@@ -146,6 +146,7 @@ module Chunk(Editor: EditorConfig) = struct
 end
 
 let editors = [
+  (module Ocamltop: EditorConfig);
   (module Emacs: EditorConfig);
   (module Vim: EditorConfig);
   (module Gedit: EditorConfig);
@@ -159,7 +160,9 @@ let link_file ?(remove=false) (opam_file,filename) =
     try (Unix.stat f).Unix.st_kind = Unix.S_LNK with Unix.Unix_error _ -> false
   in
   if islink dst then Unix.unlink dst;
-  if not (Sys.file_exists dst) && not remove then Unix.link src dst
+  if not (Sys.file_exists dst) && not remove then
+    (msg "Linking %s to %s" src filename;
+     Unix.symlink src dst)
 
 let tool_name t =
   let module T = (val t: ToolConfig) in T.name
