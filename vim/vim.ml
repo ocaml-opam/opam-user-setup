@@ -63,7 +63,10 @@ module Merlin = struct
         Printf.sprintf "execute \"helptags %s/merlin/vim/doc\""
           (opam_var "share")
       in
-      if 0 <> Sys.command (Printf.sprintf "vim -e \"%s\"" vim_cmd)
+      let vim_batch =
+        Printf.sprintf "echo \"%s\" | vim -T dumb -n -e 2<&-" vim_cmd
+      in
+      if 0 <> Sys.command vim_batch
       then msg "Warning: post-hook failed for vim/merlin"
   ]
   let pre_remove = [ (* fixme: opposite of the above ? *) ]
