@@ -10,6 +10,7 @@ dev-repo: "https://github.com/AltGr/opam-user-setup.git"
 build: [make]
 install: [
   "./opam-user-setup"
+  "tuareg" {tuareg:installed}
   "ocp-indent" {ocp-indent:installed}
   "ocp-index" {ocp-index:installed}
   "merlin" {merlin:installed}
@@ -25,6 +26,7 @@ depends: [
   "re"
 ]
 depopts: [
+  "tuareg"
   "merlin"
   "ocp-indent"
   "ocp-index"

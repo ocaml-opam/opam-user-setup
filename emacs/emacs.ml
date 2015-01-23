@@ -63,10 +63,11 @@ let base_template = [".emacs", lines_of_string {elisp|
 (add-hook 'ocaml-mode-hook 'set-ocaml-error-regexp)
 |elisp} ]
 
+let share_dir = opam_var "share"
+
 let dot_emacs_chunk =
   let def_loadpath =
-    let share = opam_var "share" in
-    Printf.sprintf "(add-to-list 'load-path \"%s/emacs/site-lisp\")" share
+    Printf.sprintf "(add-to-list 'load-path \"%s/emacs/site-lisp\")" share_dir
   in
   let def_env =
     "(defvar static-opam-env (quote" ::
@@ -90,6 +91,19 @@ let files = []
 
 let comment = (^) ";; "
 
+
+module Tuareg = struct
+  let name = "tuareg"
+  let chunks =
+    let commands = [
+      Printf.sprintf "(add-to-list 'load-path %S)" (share_dir / "tuareg");
+      "(load \"tuareg-site-file\")"
+    ] in
+    [".emacs", Text (commands)]
+  let files = []
+  let post_install = []
+  let pre_remove = []
+end
 
 module OcpIndent = struct
   let name = "ocp-indent"
@@ -126,6 +140,7 @@ module Merlin = struct
 end
 
 let tools = [
+  (module Tuareg : ToolConfig);
   (module OcpIndent : ToolConfig);
   (module OcpIndex : ToolConfig);
   (module Merlin : ToolConfig);
