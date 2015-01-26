@@ -95,3 +95,7 @@ This is a community effort, and contributions are gladly welcome.
 The tool itself is released under ISC, but the included configuration templates
 and snippets themselves are in CC0 (almost public domain) -- because who wants a
 license on his configuration files ?
+
+A notable exception is with the Vim base template, which is taken from
+[vim-sensible](https://github.com/tpope/vim-sensible) and follows the term of
+the Vim license (Copyright © Tim Pope ; see `:help license` in Vim).

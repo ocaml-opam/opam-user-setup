@@ -15,4 +15,7 @@ The OCaml code is licensed under ISC
     CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-The configuration files, templates and snippets are available under CC0
+The configuration files, templates and snippets are available under CC0, with
+the notable exception of the Vim base template, which is taken from
+https://github.com/tpope/vim-sensible and follows the term of the Vim license
+(Copyright © Tim Pope ; see `:help license` in Vim)
