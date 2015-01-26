@@ -153,6 +153,19 @@ let editors = [
   (module Sublime: EditorConfig);
 ]
 
+let tools =
+  List.fold_left
+    (fun acc editor ->
+       let module Editor = (val editor: EditorConfig) in
+       List.fold_left (fun acc tool ->
+           let module Tool = (val tool: ToolConfig) in
+           StringMap.add Tool.name
+             (Editor.name ::
+              try StringMap.find Tool.name acc with Not_found -> [])
+             acc)
+         acc Editor.tools)
+    StringMap.empty editors
+
 let link_file ?(remove=false) (opam_file,filename) =
   let src = opam_prefix/opam_file in
   let dst = home/filename in
@@ -183,8 +196,17 @@ let () =
   let remove = options = ["--remove"] && tool_names = [] in
   if not remove && options <> [] then (
     msg "Usage: %s [--remove] [tool names]" Sys.argv.(0);
+    msg "Available tools: %s"
+      (String.concat " " (List.map fst (StringMap.bindings tools)));
     exit 2
   );
+  let unknown_tools =
+    List.filter (fun name -> not (StringMap.mem name tools)) tool_names
+  in
+  if unknown_tools <> [] then
+    (msg "Error: the following tools are unknown: %s"
+       (String.concat " " unknown_tools);
+     exit 2);
   editors |> List.iter @@ fun e ->
   let module E = (val e: EditorConfig) in
   if not (E.check ()) then () else
@@ -194,9 +216,6 @@ let () =
         (fun t -> List.mem (tool_name t) tool_names)
         E.tools
   in
-  if List.length tools < List.length tool_names then
-    msg "Warning: some unrecognised tool names in %S for %s"
-      (String.concat " " tool_names) E.name;
   remove_tools |> List.iter @@ tool_pre_remove @> List.iter (fun f -> f ());
   (E.base_template
    |> List.iter @@ fun (filename, lines) ->
