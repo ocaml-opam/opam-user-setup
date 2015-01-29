@@ -36,6 +36,7 @@ let template_base = {elisp|
  '(next-error-highlight-no-select t)
  '(backup-directory-alist '(("." . "~/.local/share/emacs/backups")))
  '(ac-use-fuzzy nil)
+ '(line-move-visual t)
  )
 
 ;; ANSI color in compilation buffer
