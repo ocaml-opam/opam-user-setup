@@ -114,19 +114,33 @@ let base_setup =
   let base = {elisp|
 ;; Base configuration for OPAM
 
+(defun opam-shell-command-to-string (command)
+  "Similar to shell-command-to-string, but returns nil unless the process
+  returned 0 (shell-command-to-string ignores return value)"
+  (let* ((return-value 0)
+         (return-string
+          (with-output-to-string
+            (setq return-value
+                  (with-current-buffer standard-output
+                    (process-file shell-file-name nil t nil
+                                  shell-command-switch command))))))
+    (if (= return-value 0) return-string nil)))
+
 (defun opam-update-env ()
   "Update the environment to follow current OPAM switch configuration"
   (interactive)
-  (dolist
-      (var (car (read-from-string (shell-command-to-string "opam config env --sexp"))))
-    (setenv (car var) (cadr var))
-    (when (string= (car var) "PATH")
-      (setq exec-path (split-string (cadr var) path-separator)))))
+  (let ((env (opam-shell-command-to-string "opam config env --sexp")))
+    (when env
+      (dolist (var (car (read-from-string env)))
+        (setenv (car var) (cadr var))
+        (when (string= (car var) "PATH")
+          (setq exec-path (split-string (cadr var) path-separator)))))))
 
 (opam-update-env)
 
 (setq opam-share
-  (substring (shell-command-to-string "opam config var share") 0 -1))
+  (let ((reply (opam-shell-command-to-string "opam config var share")))
+    (when reply (substring reply 0 -1))))
 
 (add-to-list 'load-path (concat opam-share "/emacs/site-lisp"))
 
@@ -176,8 +190,8 @@ let base_setup =
       ((command "opam list --installed --short --safe --color=never")
        (names (mapcar 'car opam-tools))
        (command-string (mapconcat 'identity (cons command names) " "))
-       (reply (shell-command-to-string command-string)))
-    (split-string reply)))
+       (reply (opam-shell-command-to-string command-string)))
+    (when reply (split-string reply))))
 
 (setq opam-tools-installed (opam-detect-installed-tools))
 
@@ -224,9 +238,11 @@ module OcpIndent = struct
       Printf.sprintf {elisp|
 ;; Load ocp-indent from its original switch when not found in current switch
 (when (not (assoc "ocp-indent" opam-tools-installed))
-  (load-file %S))
+  (load-file %S)
+  (setq ocp-indent-path %S))
 |elisp}
         (share_dir / "emacs" / "site-lisp" / "ocp-indent.el")
+        (opam_var "bin" / "ocp-indent")
     in
     [".emacs", Text (lines_of_string contents)]
   let files = []
