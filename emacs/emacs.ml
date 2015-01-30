@@ -119,7 +119,9 @@ let base_setup =
   (interactive)
   (dolist
       (var (car (read-from-string (shell-command-to-string "opam config env --sexp"))))
-    (setenv (car var) (cadr var))))
+    (setenv (car var) (cadr var))
+    (when (string= (car var) "PATH")
+      (setq exec-path (split-string (cadr var) path-separator)))))
 
 (opam-update-env)
 
