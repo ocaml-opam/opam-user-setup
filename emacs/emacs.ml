@@ -101,7 +101,7 @@ started from a shell."
 let base_template = [
   ".emacs",
   lines_of_string template_base @
-  (if opam_var "os" = "darwin" then lines_of_file dot_emacs_tweak_osx else []) @
+  (if opam_var "os" = "darwin" then lines_of_string dot_emacs_tweak_osx else []) @
   lines_of_string template_ocaml
 ]
 
