@@ -150,7 +150,7 @@ let base_setup =
 ;; OPAM-installed tools automated detection and initialisation
 
 (defun opam-setup-tuareg ()
-  (add-to-list 'load-path (concat opam-share "/tuareg"))
+  (add-to-list 'load-path (concat opam-share "/tuareg") t)
   (load "tuareg-site-file"))
 
 (defun opam-setup-ocp-indent ()
@@ -220,10 +220,12 @@ module Tuareg = struct
       Printf.sprintf {elisp|
 ;; Load tuareg from its original switch when not found in current switch
 (when (not (assoc "tuareg" opam-tools-installed))
-  (add-to-list 'load-path %S)
+  (add-to-list 'load-path %S t)
   (load "tuareg-site-file"))
 |elisp}
-        (share_dir / "tuareg")
+        (if Sys.file_exists (share_dir / "emacs" / "site-lisp" / "tuareg.el")
+         then share_dir / "emacs" / "site-lisp"
+         else share_dir / "tuareg")
     in
     [".emacs", Text (lines_of_string contents)]
   let files = []
