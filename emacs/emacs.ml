@@ -68,7 +68,7 @@ let template_ocaml = {elisp|
     2 3 (5 . 6) (9 . 11) 1 (8 compilation-message-face)))))
 
 (add-hook 'tuareg-mode-hook 'set-ocaml-error-regexp)
-(add-hook 'ocaml-mode-hook 'set-ocaml-error-regexp)
+(add-hook 'caml-mode-hook 'set-ocaml-error-regexp)
 
 |elisp}
 
@@ -216,16 +216,26 @@ let share_dir = opam_var "share"
 module Tuareg = struct
   let name = "tuareg"
   let chunks =
+    let tuareg_dir =
+      if Sys.file_exists (share_dir / "emacs" / "site-lisp" / "tuareg.el")
+      then share_dir / "emacs" / "site-lisp"
+      else share_dir / "tuareg" (* legacy *)
+    in
     let contents =
       Printf.sprintf {elisp|
-;; Load tuareg from its original switch when not found in current switch
+;; Set to autoload tuareg from its original switch when not found in current
+;; switch (don't load tuareg-site-file as it adds unwanted load-paths)
 (when (not (assoc "tuareg" opam-tools-installed))
-  (add-to-list 'load-path %S t)
-  (load "tuareg-site-file"))
+  (autoload 'tuareg-mode "%s/tuareg" "Major mode for editing OCaml code" t nil)
+  (autoload 'tuareg-run-ocaml "%s/tuareg" "Run an OCaml toplevel process" t nil)
+  (autoload 'ocamldebug "%s/ocamldebug" "Run the OCaml debugger" t nil)
+  (defalias 'run-ocaml 'tuareg-run-ocaml)
+  (defalias 'camldebug 'ocamldebug)
+  (add-to-list 'auto-mode-alist '("\\.ml[iylp]?\\'" . tuareg-mode))
+  (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".annot"))
+    (add-to-list 'completion-ignored-extensions ext)))
 |elisp}
-        (if Sys.file_exists (share_dir / "emacs" / "site-lisp" / "tuareg.el")
-         then share_dir / "emacs" / "site-lisp"
-         else share_dir / "tuareg")
+        tuareg_dir tuareg_dir tuareg_dir
     in
     [".emacs", Text (lines_of_string contents)]
   let files = []

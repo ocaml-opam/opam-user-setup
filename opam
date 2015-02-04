@@ -32,3 +32,9 @@ depopts: [
   "ocp-index"
 ]
 available: [ ocaml-version >= "4.02" ]
+post-messages: "
+You can ignore above messages from ocp-indent, ocp-index, merlin, tuareg,
+etc. as their configuration has automatically been taken care of.
+In case you had configured your editor manually, you may want to check your
+config files to avoid duplicates.
+" {success}

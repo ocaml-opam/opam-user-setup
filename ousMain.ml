@@ -166,15 +166,22 @@ let tools =
          acc Editor.tools)
     StringMap.empty editors
 
+let rec mkdir_p dir =
+  if Sys.file_exists dir then () else
+    (mkdir_p (Filename.dirname dir);
+     Unix.mkdir dir 0o777)
+
 let link_file ?(remove=false) (opam_file,filename) =
   let src = opam_prefix/opam_file in
   let dst = home/filename in
+  let dstdir = Filename.dirname dst in
   let islink f =
     try (Unix.stat f).Unix.st_kind = Unix.S_LNK with Unix.Unix_error _ -> false
   in
   if islink dst then Unix.unlink dst;
   if not (Sys.file_exists dst) && not remove then
     (msg "Linking %s to %s" src filename;
+     mkdir_p dstdir;
      Unix.symlink src dst)
 
 let tool_name t =
