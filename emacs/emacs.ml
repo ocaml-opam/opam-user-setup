@@ -232,8 +232,8 @@ module Tuareg = struct
   (defalias 'run-ocaml 'tuareg-run-ocaml)
   (defalias 'camldebug 'ocamldebug)
   (add-to-list 'auto-mode-alist '("\\.ml[iylp]?\\'" . tuareg-mode))
-  (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmi" ".annot"))
   (add-to-list 'auto-mode-alist '("\\.eliomi?\\'" . tuareg-mode))
+  (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmxs" ".cmt" ".cmti" ".cmi" ".annot"))
     (add-to-list 'completion-ignored-extensions ext)))
 |elisp}
         tuareg_dir tuareg_dir tuareg_dir
