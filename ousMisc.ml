@@ -45,6 +45,10 @@ let opam_var v =
   | [value] -> value
   | _ -> failwith (Printf.sprintf "Bad answer from '%s'" cmd)
 
+let home =
+  try Sys.getenv "HOME"
+  with Not_found -> failwith "Could not get the HOME variable"
+
 let has_command c =
   let cmd = Printf.sprintf "/bin/sh -c command -v %s" c in
   try Sys.command cmd = 0 with Sys_error _ -> false
