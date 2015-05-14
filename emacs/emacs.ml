@@ -126,17 +126,19 @@ let base_setup =
                                   shell-command-switch command))))))
     (if (= return-value 0) return-string nil)))
 
-(defun opam-update-env ()
+(defun opam-update-env (switch)
   "Update the environment to follow current OPAM switch configuration"
-  (interactive)
-  (let ((env (opam-shell-command-to-string "opam config env --sexp")))
+  (interactive "sopam switch (empty to keep current setting): ")
+  (let* ((switch-arg (if (= 0 (length switch)) "" (concat "--switch " switch)))
+         (command (concat "opam config env --sexp " switch-arg))
+         (env (opam-shell-command-to-string command)))
     (when env
       (dolist (var (car (read-from-string env)))
         (setenv (car var) (cadr var))
         (when (string= (car var) "PATH")
           (setq exec-path (split-string (cadr var) path-separator)))))))
 
-(opam-update-env)
+(opam-update-env nil)
 
 (setq opam-share
   (let ((reply (opam-shell-command-to-string "opam config var share")))
