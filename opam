@@ -1,6 +1,6 @@
 opam-version: "1.2"
 name: "user-setup"
-version: "0.1"
+version: "0.4"
 maintainer: "Louis Gesbert <louis.gesbert@ocamlpro.com>"
 authors: "Louis Gesbert <louis.gesbert@ocamlpro.com>"
 homepage: "https://github.com/AltGr/opam-user-setup"
@@ -25,16 +25,15 @@ depends: [
   "ocamlfind" {build}
   "re"
 ]
-depopts: [
-  "tuareg"
-  "merlin"
-  "ocp-indent"
-  "ocp-index"
-]
-available: [ ocaml-version >= "4.02" ]
-post-messages: "
-You can ignore above messages from ocp-indent, ocp-index, merlin, tuareg,
-etc. as their configuration has automatically been taken care of.
-In case you had configured your editor manually, you may want to check your
+depopts: ["tuareg" "merlin" "ocp-indent" "ocp-index"]
+available: [ocaml-version >= "4.02"]
+post-messages: [
+  "
+You can ignore above messages from ocp-indent, ocp-index, merlin, tuareg, \
+etc. as their configuration has automatically been taken care of. \
+In case you had configured your editor manually, you may want to check your \
 config files to avoid duplicates.
-" {success}
+  "
+    {success}
+]
+tags: [ "org:ocamlpro" "flags:verbose" ]
