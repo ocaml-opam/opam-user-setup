@@ -168,10 +168,12 @@ let base_setup =
   (require 'ocp-indent))
 
 (defun opam-setup-ocp-index ()
+  (message "index-init")
   (require 'ocp-index))
 
 (defun opam-setup-merlin ()
   (require 'merlin)
+  (message "merlin-init")
   (add-hook 'tuareg-mode-hook 'merlin-mode t)
   (add-hook 'caml-mode-hook 'merlin-mode t)
   (set-default 'ocp-index-use-auto-complete nil)
@@ -208,9 +210,9 @@ let base_setup =
 
 (defun opam-auto-tools-setup ()
   (interactive)
-  (dolist
-      (f (mapcar (lambda (x) (cdr (assoc x opam-tools))) opam-tools-installed))
-    (funcall (symbol-function f))))
+  (dolist (tool opam-tools)
+    (when (member (car tool) opam-tools-installed)
+     (funcall (symbol-function (cdr tool))))))
 
 (opam-auto-tools-setup)
 
