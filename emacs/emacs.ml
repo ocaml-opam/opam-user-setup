@@ -107,6 +107,10 @@ let dotemacs =
   then dotemacsdinit
   else dotemacs
 
+let conf_file =
+  let ( / ) = Filename.concat in
+  ".emacs.d" / "opam-user-setup.el"
+
 let base_template = [
   dotemacs,
   lines_of_string template_base @
@@ -120,7 +124,9 @@ let base_template = [
  *)
 
 let base_setup =
-  let base = {elisp|
+  let base_opam = {elisp|
+(provide 'opam-user-setup)
+
 ;; Base configuration for OPAM
 
 (defun opam-shell-command-to-string (command)
@@ -157,7 +163,7 @@ let base_setup =
 
 |elisp}
   in
-  let tools = {elisp|
+  let base_tools = {elisp|
 ;; OPAM-installed tools automated detection and initialisation
 
 (defun opam-setup-tuareg ()
@@ -168,12 +174,10 @@ let base_setup =
   (require 'ocp-indent))
 
 (defun opam-setup-ocp-index ()
-  (message "index-init")
   (require 'ocp-index))
 
 (defun opam-setup-merlin ()
   (require 'merlin)
-  (message "merlin-init")
   (add-hook 'tuareg-mode-hook 'merlin-mode t)
   (add-hook 'caml-mode-hook 'merlin-mode t)
   (set-default 'ocp-index-use-auto-complete nil)
@@ -218,7 +222,12 @@ let base_setup =
 
 |elisp}
   in
-  [ dotemacs, Text (lines_of_string base @ lines_of_string tools) ]
+  let base_autoload = {elisp|
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+|elisp}
+  in
+  [ conf_file, Text (lines_of_string base_opam @ lines_of_string base_tools);
+    dotemacs, Text (lines_of_string base_autoload) ]
 
 let files = []
 
@@ -251,7 +260,7 @@ module Tuareg = struct
 |elisp}
         tuareg_dir tuareg_dir tuareg_dir
     in
-    [dotemacs, Text (lines_of_string contents)]
+    [conf_file, Text (lines_of_string contents)]
   let files = []
   let post_install = []
   let pre_remove = []
@@ -270,7 +279,7 @@ module OcpIndent = struct
         (share_dir / "emacs" / "site-lisp" / "ocp-indent.el")
         (opam_var "bin" / "ocp-indent")
     in
-    [dotemacs, Text (lines_of_string contents)]
+    [conf_file, Text (lines_of_string contents)]
   let files = []
   let post_install = []
   let pre_remove = []
