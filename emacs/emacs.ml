@@ -98,8 +98,17 @@ started from a shell."
 |elisp}
 
 
+let dotemacs =
+  let ( / ) = Filename.concat in
+  let dotemacs = ".emacs" in
+  let dotemacsdinit = ".emacs.d" / "init.el" in
+  if not (Sys.file_exists (home/dotemacs)) &&
+     Sys.file_exists (home/dotemacsdinit)
+  then dotemacsdinit
+  else dotemacs
+
 let base_template = [
-  ".emacs",
+  dotemacs,
   lines_of_string template_base @
   (if opam_var "os" = "darwin" then lines_of_string dot_emacs_tweak_osx else []) @
   lines_of_string template_ocaml
@@ -126,17 +135,19 @@ let base_setup =
                                   shell-command-switch command))))))
     (if (= return-value 0) return-string nil)))
 
-(defun opam-update-env ()
+(defun opam-update-env (switch)
   "Update the environment to follow current OPAM switch configuration"
-  (interactive)
-  (let ((env (opam-shell-command-to-string "opam config env --sexp")))
+  (interactive "sopam switch (empty to keep current setting): ")
+  (let* ((switch-arg (if (= 0 (length switch)) "" (concat "--switch " switch)))
+         (command (concat "opam config env --sexp " switch-arg))
+         (env (opam-shell-command-to-string command)))
     (when env
       (dolist (var (car (read-from-string env)))
         (setenv (car var) (cadr var))
         (when (string= (car var) "PATH")
           (setq exec-path (split-string (cadr var) path-separator)))))))
 
-(opam-update-env)
+(opam-update-env nil)
 
 (setq opam-share
   (let ((reply (opam-shell-command-to-string "opam config var share")))
@@ -205,7 +216,7 @@ let base_setup =
 
 |elisp}
   in
-  [ ".emacs", Text (lines_of_string base @ lines_of_string tools) ]
+  [ dotemacs, Text (lines_of_string base @ lines_of_string tools) ]
 
 let files = []
 
@@ -238,7 +249,7 @@ module Tuareg = struct
 |elisp}
         tuareg_dir tuareg_dir tuareg_dir
     in
-    [".emacs", Text (lines_of_string contents)]
+    [dotemacs, Text (lines_of_string contents)]
   let files = []
   let post_install = []
   let pre_remove = []
@@ -257,7 +268,7 @@ module OcpIndent = struct
         (share_dir / "emacs" / "site-lisp" / "ocp-indent.el")
         (opam_var "bin" / "ocp-indent")
     in
-    [".emacs", Text (lines_of_string contents)]
+    [dotemacs, Text (lines_of_string contents)]
   let files = []
   let post_install = []
   let pre_remove = []

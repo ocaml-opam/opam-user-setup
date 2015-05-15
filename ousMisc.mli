@@ -28,5 +28,8 @@ val lines_to_file: lines -> string -> unit
 (** Query OPAM for a variable (see 'opam config list') *)
 val opam_var: string -> string
 
+(** The current user's home directory (as given by environment variable HOME) *)
+val home: string
+
 (** Checks if the given command is available on the system *)
 val has_command: string -> bool

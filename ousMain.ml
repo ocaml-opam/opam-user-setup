@@ -2,10 +2,6 @@ open OusSig
 open OusTypes
 open OusMisc
 
-let home =
-  try Sys.getenv "HOME"
-  with Not_found -> failwith "Could not get the HOME variable"
-
 let opam_prefix = opam_var "prefix"
 
 (** Handles addition, removal and update of chunks within config files *)
