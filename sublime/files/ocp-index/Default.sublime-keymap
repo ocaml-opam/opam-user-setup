@@ -1,0 +1,5 @@
+[
+	{
+		"keys":["alt+a"],"command":"sublime_ocp_types"
+	}
+]

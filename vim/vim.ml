@@ -20,7 +20,7 @@ let base_template = [ ".vimrc", lines_of_string
 " Maintainer:   Tim Pope <http://tpo.pe/>
 " Version:      1.1
 
-if exists('g:loaded_sensible') || &compatible
+if &compatible
   finish
 else
   let g:loaded_sensible = 1
