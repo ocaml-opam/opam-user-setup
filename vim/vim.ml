@@ -123,8 +123,7 @@ let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
 let s:opam_configuration = {}
 
 function! OpamConfOcpIndent()
-  let l:file = s:opam_share_dir . "/vim/syntax/ocp-indent.vim"
-  execute "source " . l:file
+   execute "set rtp^=" . s:opam_share_dir . "/vim"
 endfunction
 let s:opam_configuration['ocp-indent'] = function('OpamConfOcpIndent')
 
@@ -142,7 +141,7 @@ let s:opam_configuration['merlin'] = function('OpamConfMerlin')
 
 let s:opam_packages = ["ocp-indent", "ocp-index", "merlin"]
 let s:opam_check_cmdline = ["opam list --installed --short --safe --color=never"] + s:opam_packages
-let s:opam_available_tools = split(system(join(s:opam_check_cmdline, ' ')))
+let s:opam_available_tools = systemlist(join(s:opam_check_cmdline, ' '))
 for tool in s:opam_available_tools
   call s:opam_configuration[tool]()
 endfor
