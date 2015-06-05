@@ -123,13 +123,12 @@ let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
 let s:opam_configuration = {}
 
 function! OpamConfOcpIndent()
-   execute "set rtp^=" . s:opam_share_dir . "/vim"
+  execute "set rtp^=" . s:opam_share_dir . "/ocp-indent/vim"
 endfunction
 let s:opam_configuration['ocp-indent'] = function('OpamConfOcpIndent')
 
 function! OpamConfOcpIndex()
-  let l:file = s:opam_share_dir . "/vim/syntax/ocpindex.vim"
-  execute "source " . l:file
+  execute "set rtp+=" . s:opam_share_dir . "/ocp-index/vim"
 endfunction
 let s:opam_configuration['ocp-index'] = function('OpamConfOcpIndex')
 
@@ -142,8 +141,11 @@ let s:opam_configuration['merlin'] = function('OpamConfMerlin')
 let s:opam_packages = ["ocp-indent", "ocp-index", "merlin"]
 let s:opam_check_cmdline = ["opam list --installed --short --safe --color=never"] + s:opam_packages
 let s:opam_available_tools = systemlist(join(s:opam_check_cmdline, ' '))
-for tool in s:opam_available_tools
-  call s:opam_configuration[tool]()
+for tool in s:opam_packages
+  " Respect package order (merlin should be after ocp-index)
+  if count(s:opam_available_tools, tool) > 0
+    call s:opam_configuration[tool]()
+  endif
 endfor
 |vim}) ]
 
@@ -172,39 +174,21 @@ endif
 end
 
 module OcpIndex = struct
-  (* Fallback for when running in a switch other than where it was installed *)
+  (* Handled dynamically, invalid in other switches *)
   let name = "ocp-index"
-  let chunks =
-    let contents =
-      Printf.sprintf {vim|
-if count(s:opam_available_tools,"ocp-index") == 0
-  source %S
-endif
-|vim}
-        (share_dir/"vim"/"syntax"/"ocpindex.vim")
-    in
-    [".vimrc", Text (lines_of_string contents)]
+  let chunks = []
   let files = []
   let post_install = []
   let pre_remove = []
 end
 
 module Merlin = struct
-  let name = "merlin"
+  (* Handled dynamically, invalid in other switches *)
+  let name = "ocp-index"
   let chunks = []
   let files = []
-  let post_install = [
-    fun () ->
-      let vim_cmd =
-        Printf.sprintf "helptags %s/merlin/vim/doc" (opam_var "share")
-      in
-      let vim_batch =
-        Printf.sprintf "echo \"%s\" | vim -T dumb -n -e 2<&-" vim_cmd
-      in
-      if 0 <> Sys.command vim_batch
-      then msg "Warning: post-hook failed for vim/merlin"
-  ]
-  let pre_remove = [ (* fixme: opposite of the above ? *) ]
+  let post_install = []
+  let pre_remove = []
 end
 
 let tools = [
