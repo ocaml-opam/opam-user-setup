@@ -12,8 +12,6 @@ let base_template = []
 let dot_ocaml_chunk =
   Text ({ocaml|
 #use "topfind";;
-#thread;;
-#camlp4o;;
 |ocaml} |> lines_of_string)
 
 let base_setup = [ ".ocamlinit", dot_ocaml_chunk ]
