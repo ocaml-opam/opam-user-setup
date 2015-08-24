@@ -192,8 +192,8 @@ let base_setup =
 
 (defun opam-setup-utop ()
   (autoload 'utop "utop" "Toplevel for OCaml" t)
-  (autoload 'utop-setup-ocaml-buffer "utop" "Toplevel for OCaml" t)
-  (add-hook 'tuareg-mode-hook 'utop-setup-ocaml-buffer))
+  (autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
+  (add-hook 'tuareg-mode-hook 'utop-minor-mode))
 
 (setq opam-tools
   '(("tuareg" . opam-setup-tuareg)
