@@ -420,7 +420,8 @@ let default_installed_editors_arg =
 
 let force_arg =
   let doc = "Install or remove configuration even when manual modifications \
-             are detected"
+             are detected (this won't override your editor configuration with \
+             the included templates, for that, you should manually remove it)"
   in
   Arg.(value & flag & info ~doc ["f";"force"])
 
