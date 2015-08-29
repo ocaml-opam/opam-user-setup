@@ -34,7 +34,8 @@ let lines_of_command c =
   close_in ic;
   lines
 
-let lines_to_file lines f =
+let lines_to_file ?(remove_if_empty=false) lines f =
+  if remove_if_empty && lines = [] then Unix.unlink f else
   let oc = open_out f in
   List.iter (fun line -> output_string oc line; output_char oc '\n') lines;
   close_out oc

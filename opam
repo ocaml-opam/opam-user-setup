@@ -8,34 +8,15 @@ bug-reports: "https://github.com/AltGr/opam-user-setup/issues"
 license: "ISC"
 dev-repo: "https://github.com/AltGr/opam-user-setup.git"
 build: [make]
-install: [
-  [ "mkdir" "-p" "%{prefix}%/share/sublime" ]
-  [ "cp" "-r" "sublime/files/ocp-index" "-t" "%{prefix}%/share/sublime" ]
-  [
-    "./opam-user-setup"
-    "tuareg" {tuareg:installed}
-    "ocp-indent" {ocp-indent:installed}
-    "ocp-index" {ocp-index:installed}
-    "merlin" {merlin:installed}
-  ]
-]
-# remove: we'd need a variable to know if it's a temporary (recompile, upgrade)
-# or real removal, to decide to uninstall the chunks or not.
-# remove: [
-#   [make] {!reinstall}
-#   ["./opam-user-setup" "--remove" ] {!reinstall}
-# ]
 depends: [
   "ocamlfind" {build}
+  "cmdliner"
   "re"
 ]
 depopts: ["tuareg" "merlin" "ocp-indent" "ocp-index"]
 available: [ocaml-version >= "4.02"]
 post-messages: [
-  "
-Editors configured. Remember to run `opam-user-setup --remove` before \
-uninstalling the package if you want to revert.
-  "
+  "To setup or update your editors, run 'opam user-setup install'."
     {success}
 ]
-tags: [ "org:ocamlpro" "flags:verbose" ]
+tags: [ "org:ocamlpro" "flags:plugin" ]

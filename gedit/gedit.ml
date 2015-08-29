@@ -1,6 +1,10 @@
+open OusSig
+open OusTypes
+open OusMisc
+
 let name = "gedit"
 
-let check () = false
+let check () = has_command "gedit"
 
 let base_template = []
 

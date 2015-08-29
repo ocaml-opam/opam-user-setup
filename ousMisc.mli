@@ -22,8 +22,8 @@ val lines_of_file: string -> lines
     output once finished *)
 val lines_of_command: string -> lines
 
-(** Writes a list of line to a file *)
-val lines_to_file: lines -> string -> unit
+(** Writes a list of lines to a file. [remove_if_empty] defaults to false. *)
+val lines_to_file: ?remove_if_empty:bool -> lines -> string -> unit
 
 (** Query OPAM for a variable (see 'opam config list') *)
 val opam_var: string -> string

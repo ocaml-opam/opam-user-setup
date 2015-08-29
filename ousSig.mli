@@ -25,11 +25,13 @@ module type ToolConfig = sig
       be changed by the user. *)
   val files : (opam_filename * filename) list
 
-  (** List of hooks that should be run after installation of the tool *)
-  val post_install : (unit -> unit) list
+  (** List of hooks that should be run after installation of the tool
+      @param [dry_run] *)
+  val post_install : (bool -> unit) list
 
-  (** List of hooks that should be run before removal of the tool *)
-  val pre_remove : (unit -> unit) list
+  (** List of hooks that should be run before removal of the tool
+      @param [dry_run] *)
+  val pre_remove : (bool -> unit) list
 end
 
 (** Modules implementing this signature reflect the configuration needed for a
