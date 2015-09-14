@@ -39,8 +39,14 @@ let lines_of_command c =
   close_in ic;
   lines
 
+let rec mkdir_p dir =
+  if Sys.file_exists dir then () else
+    (mkdir_p (Filename.dirname dir);
+     Unix.mkdir dir 0o777)
+
 let lines_to_file ?(remove_if_empty=false) lines f =
   if remove_if_empty && lines = [] then Unix.unlink f else
+  mkdir_p (Filename.dirname f);
   let oc = open_out f in
   List.iter (fun line -> output_string oc line; output_char oc '\n') lines;
   close_out oc

@@ -39,3 +39,6 @@ val home: string
 
 (** Checks if the given command is available on the system *)
 val has_command: string -> bool
+
+(** Creates the directory and its parents, if it doesn't exist *)
+val mkdir_p: string -> unit

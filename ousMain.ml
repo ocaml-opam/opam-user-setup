@@ -183,11 +183,6 @@ module Chunk(E: EditorConfig) = struct
 
 end
 
-let rec mkdir_p dir =
-  if Sys.file_exists dir then () else
-    (mkdir_p (Filename.dirname dir);
-     Unix.mkdir dir 0o777)
-
 let link_file name force dry_run (opam_file,filename) =
   let src = opam_prefix/opam_file in
   let dst = home/filename in
