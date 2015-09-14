@@ -9,6 +9,12 @@ val (/): string -> string -> string
 (** Reverse composition *)
 val (@>): ('a -> 'b) -> ('b -> 'c) -> ('a -> 'c)
 
+(** Function application, with lower priority *)
+val (@@): ('a -> 'b) -> 'a -> 'b
+
+(** Reverse function application *)
+val (|>): 'a -> ('a -> 'b) -> 'b
+
 module StringMap: Map.S with type key = string
 type 'a stringmap = 'a StringMap.t
 

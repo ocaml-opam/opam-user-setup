@@ -6,8 +6,22 @@ opam-user-setup: _build/ousMain.native
 .PHONY: ALWAYS
 ALWAYS:
 
+NEEDPP != ocaml -vnum | awk -F. '{if ($$1<4 || ($$1==4 && $$2<=1)) print "yes"}'
+ifeq ($(NEEDPP),yes)
+  PP = -pp $(shell pwd)/pp_401.ml
+endif
+
+PACKAGES = unix re re.pcre cmdliner
+
+SUBDIRS = ocamltop emacs vim sublime gedit
+
 _build/ousMain.native: ALWAYS
-	ocamlbuild -r -I . -Is ocamltop,emacs,vim,sublime,gedit -use-ocamlfind -tag debug -pkgs unix,re,re.pcre,cmdliner ousMain.native
+	ocamlbuild -r \
+	  -tag debug \
+	  -I . $(patsubst %,-I %,$(SUBDIRS)) \
+	  -use-ocamlfind $(patsubst %,-pkg %,$(PACKAGES)) \
+	  $(PP) \
+	  ousMain.native
 
 user-setup.install: ALWAYS
 	echo 'bin: "opam-user-setup"' > $@

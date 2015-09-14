@@ -63,9 +63,10 @@ module Chunk(E: EditorConfig) = struct
       let rec aux acc = function
         | [] -> List.rev acc
         | line :: lines ->
-          match Re.exec re_head line with
-          | exception Not_found -> aux (Line line :: acc) lines
-          | ss ->
+          let r = try Some (Re.exec re_head line) with Not_found -> None in
+          match r with
+          | None -> aux (Line line :: acc) lines
+          | Some ss ->
             let tool = Re.get ss 1 in
             let md5 = Digest.from_hex (Re.get ss 2) in
             let rec read_chunk chunk_contents = function
@@ -81,10 +82,12 @@ module Chunk(E: EditorConfig) = struct
                   aux (Line line :: acc)
                     (List.rev_append chunk_contents (cline::lines))
                 ) else
-                match Re.exec re_foot cline with
-                | exception Not_found ->
+                let r = try Some (Re.exec re_foot cline)
+                  with Not_found -> None in
+                match r with
+                | None ->
                   read_chunk (cline::chunk_contents) lines
-                | ss ->
+                | Some ss ->
                   let endtool = Re.get ss 1 in
                   if endtool <> tool then
                     msg "Warning: chunk for %S closed as %S in %s"

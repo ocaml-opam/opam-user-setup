@@ -2,6 +2,10 @@ open OusTypes
 
 let msg fmt = Printf.kprintf print_endline fmt
 
+external (@@) : ('a -> 'b) -> 'a -> 'b = "%apply"
+
+external (|>) : 'a -> ('a -> 'b) -> 'b = "%revapply"
+
 let (/) = Filename.concat
 
 let (@>) f g x = g (f x)
@@ -15,9 +19,10 @@ let lines_of_string s =
 
 let lines_of_channel ic =
   let rec aux acc =
-    match input_line ic with
-    | s -> aux (s::acc)
-    | exception End_of_file -> acc
+    let l = try Some (input_line ic) with End_of_file -> None in
+    match l with
+    | Some s -> aux (s::acc)
+    | None -> acc
   in
   List.rev (aux [])
 
