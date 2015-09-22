@@ -30,3 +30,7 @@ user-setup.install: ALWAYS
 	  echo "  \"$$f\" { \"sublime/ocp-index/$$(basename $$f)\" }"; \
 	done >> $@
 	echo ']' >> $@
+
+.PHONY: test
+test:
+	make -C test
