@@ -171,10 +171,15 @@ let base_setup =
   (load "tuareg-site-file"))
 
 (defun opam-setup-ocp-indent ()
-  (require 'ocp-indent))
+  (autoload 'ocp-setup-indent "ocp-indent" "Improved indentation for Tuareg mode")
+  (autoload 'ocp-indent-caml-mode-setup "ocp-indent" "Improved indentation for Caml mode")
+  (add-hook 'tuareg-mode-hook 'ocp-setup-indent t)
+  (add-hook 'caml-mode-hook 'ocp-indent-caml-mode-setup  t))
 
 (defun opam-setup-ocp-index ()
-  (require 'ocp-index))
+  (autoload 'ocp-index-mode "ocp-index" "OCaml code browsing, documentation and completion based on build artefacts")
+  (add-hook 'tuareg-mode-hook 'ocp-index-mode t)
+  (add-hook 'caml-mode-hook 'ocp-index-mode t))
 
 (defun opam-setup-merlin ()
   (require 'merlin)
@@ -275,14 +280,17 @@ module OcpIndent = struct
   let name = "ocp-indent"
   let chunks =
     let contents =
+      let el = share_dir / "emacs" / "site-lisp" / "ocp-indent.el" in
       Printf.sprintf {elisp|
 ;; Load ocp-indent from its original switch when not found in current switch
 (when (not (assoc "ocp-indent" opam-tools-installed))
-  (load-file %S)
+  (autoload 'ocp-setup-indent "%s" "Improved indentation for Tuareg mode")
+  (autoload 'ocp-indent-caml-mode-setup "%s" "Improved indentation for Caml mode")
+  (add-hook 'tuareg-mode-hook 'ocp-setup-indent t)
+  (add-hook 'caml-mode-hook 'ocp-indent-caml-mode-setup  t)
   (setq ocp-indent-path %S))
 |elisp}
-        (share_dir / "emacs" / "site-lisp" / "ocp-indent.el")
-        (opam_var "bin" / "ocp-indent")
+        el el (opam_var "bin" / "ocp-indent")
     in
     [conf_file, Text (lines_of_string contents)]
   let files = []
