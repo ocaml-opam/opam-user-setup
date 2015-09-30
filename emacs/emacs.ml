@@ -253,22 +253,26 @@ module Tuareg = struct
 ;; Set to autoload tuareg from its original switch when not found in current
 ;; switch (don't load tuareg-site-file as it adds unwanted load-paths)
 (when (not (member "tuareg" opam-tools-installed))
-  (provide 'tuareg_indent) ;; to prevent circular dependency
-  (autoload 'tuareg-make-indentation-regexps "%s/tuareg_indent"
-    "Init indentation for OCaml" t nil)
-  (autoload 'tuareg--electric-close-vector "%s/tuareg_indent"
-    "Init indentation for OCaml" t nil)
-  (autoload 'tuareg-mode "%s/tuareg" "Major mode for editing OCaml code" t nil)
-  (autoload 'tuareg-run-ocaml "%s/tuareg" "Run an OCaml toplevel process" t nil)
-  (autoload 'ocamldebug "%s/ocamldebug" "Run the OCaml debugger" t nil)
+  (defun opam-tuareg-autoload (fct file doc args)
+    (let ((load-path (cons "%s" load-path)))
+      (load file))
+    (apply fct args))
+  (defun tuareg-mode (&rest args)
+    (opam-tuareg-autoload 'tuareg-mode "tuareg" "Major mode for editing OCaml code" args))
+  (defun tuareg-run-ocaml (&rest args)
+    (opam-tuareg-autoload 'tuareg-run-ocaml "tuareg" "Run an OCaml toplevel process" args))
+  (defun ocamldebug (&rest args)
+    (opam-tuareg-autoload 'ocamldebug "ocamldebug" "Run the OCaml debugger" args))
   (defalias 'run-ocaml 'tuareg-run-ocaml)
   (defalias 'camldebug 'ocamldebug)
   (add-to-list 'auto-mode-alist '("\\.ml[iylp]?\\'" . tuareg-mode))
   (add-to-list 'auto-mode-alist '("\\.eliomi?\\'" . tuareg-mode))
+  (add-to-list 'interpreter-mode-alist '("ocamlrun" . tuareg-mode))
+  (add-to-list 'interpreter-mode-alist '("ocaml" . tuareg-mode))
   (dolist (ext '(".cmo" ".cmx" ".cma" ".cmxa" ".cmxs" ".cmt" ".cmti" ".cmi" ".annot"))
     (add-to-list 'completion-ignored-extensions ext)))
 |elisp}
-        tuareg_dir tuareg_dir tuareg_dir tuareg_dir tuareg_dir
+        tuareg_dir
     in
     [conf_file, Text (lines_of_string contents)]
   let files = []
