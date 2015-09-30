@@ -62,5 +62,5 @@ let home =
   with Not_found -> failwith "Could not get the HOME variable"
 
 let has_command c =
-  let cmd = Printf.sprintf "/bin/sh -c command -v %s" c in
+  let cmd = Printf.sprintf "/bin/sh -c \"command -v %s\" >/dev/null" c in
   try Sys.command cmd = 0 with Sys_error _ -> false
