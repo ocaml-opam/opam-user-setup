@@ -462,7 +462,7 @@ let remove_cmd =
 
 let default_cmd =
   fst status_cmd,
-  Term.info "opam-user-setup" ~version:"0.4"
+  Term.info "opam-user-setup" ~version:"0.5"
 
 let () =
   match
