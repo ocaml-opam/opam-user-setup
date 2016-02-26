@@ -185,8 +185,14 @@ let base_setup =
   (require 'merlin)
   (add-hook 'tuareg-mode-hook 'merlin-mode t)
   (add-hook 'caml-mode-hook 'merlin-mode t)
-  (set-default 'ocp-index-use-auto-complete nil)
-  (set-default 'merlin-use-auto-complete-mode 'easy)
+
+  (defcustom ocp-index-use-auto-complete nil
+    "Use auto-complete with ocp-index (disabled by default by opam-user-setup because merlin is in use)"
+    :group 'ocp_index)
+  (defcustom merlin-ac-setup 'easy
+    "Use auto-complete with merlin (enabled by default by opam-user-setup)"
+    :group 'merlin-ac)
+
   ;; So you can do it on a mac, where `C-<up>` and `C-<down>` are used
   ;; by spaces.
   (define-key merlin-mode-map
