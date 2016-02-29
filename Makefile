@@ -6,7 +6,7 @@ opam-user-setup: _build/ousMain.native
 .PHONY: ALWAYS
 ALWAYS:
 
-NEEDPP != ocaml -vnum | awk -F. '{if ($$1<4 || ($$1==4 && $$2<=1)) print "yes"}'
+NEEDPP = $(shell ocaml -vnum | awk -F. '{if ($$1<4 || ($$1==4 && $$2<=1)) print "yes"}')
 ifeq ($(NEEDPP),yes)
   PP = -pp $(shell pwd)/pp_401.ml
 endif

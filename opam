@@ -14,7 +14,7 @@ depends: [
   "re"
 ]
 depopts: ["tuareg" "merlin" "ocp-indent" "ocp-index"]
-available: [ocaml-version >= "4.00"]
+available: [ocaml-version >= "3.12.1"]
 post-messages: [
   "To setup or update your editors, run 'opam user-setup install'."
     {success}
