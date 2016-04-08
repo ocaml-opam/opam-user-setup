@@ -170,7 +170,20 @@ let base_setup =
   (add-to-list 'load-path (concat opam-share "/tuareg") t)
   (load "tuareg-site-file"))
 
+(defun opam-setup-add-ocaml-hook (h)
+  (add-hook 'tuareg-mode-hook h t)
+  (add-hook 'caml-mode-hook h t))
+
+(defun opam-setup-complete ()
+  (if (require 'company nil t)
+    (opam-setup-add-ocaml-hook
+      (lambda ()
+         (company-mode)
+         (defalias 'auto-complete 'company-complete)))
+    (require 'auto-complete nil t)))
+
 (defun opam-setup-ocp-indent ()
+  (opam-setup-complete)
   (autoload 'ocp-setup-indent "ocp-indent" "Improved indentation for Tuareg mode")
   (autoload 'ocp-indent-caml-mode-setup "ocp-indent" "Improved indentation for Caml mode")
   (add-hook 'tuareg-mode-hook 'ocp-setup-indent t)
@@ -178,13 +191,12 @@ let base_setup =
 
 (defun opam-setup-ocp-index ()
   (autoload 'ocp-index-mode "ocp-index" "OCaml code browsing, documentation and completion based on build artefacts")
-  (add-hook 'tuareg-mode-hook 'ocp-index-mode t)
-  (add-hook 'caml-mode-hook 'ocp-index-mode t))
+  (opam-setup-add-ocaml-hook 'ocp-index-mode))
 
 (defun opam-setup-merlin ()
+  (opam-setup-complete)
   (require 'merlin)
-  (add-hook 'tuareg-mode-hook 'merlin-mode t)
-  (add-hook 'caml-mode-hook 'merlin-mode t)
+  (opam-setup-add-ocaml-hook 'merlin-mode)
 
   (defcustom ocp-index-use-auto-complete nil
     "Use auto-complete with ocp-index (disabled by default by opam-user-setup because merlin is in use)"
