@@ -143,7 +143,10 @@ let base_setup =
 
 (defun opam-update-env (switch)
   "Update the environment to follow current OPAM switch configuration"
-  (interactive "sopam switch (empty to keep current setting): ")
+  (interactive
+   (list (completing-read
+          "sopam switch (empty to keep current setting): "
+          (split-string (opam-shell-command-to-string "opam switch list -s") "\n"))))
   (let* ((switch-arg (if (= 0 (length switch)) "" (concat "--switch " switch)))
          (command (concat "opam config env --sexp " switch-arg))
          (env (opam-shell-command-to-string command)))
