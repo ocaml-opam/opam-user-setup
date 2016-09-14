@@ -145,7 +145,7 @@ let base_setup =
   "Update the environment to follow current OPAM switch configuration"
   (interactive "sopam switch (empty to keep current setting): ")
   (let* ((switch-arg (if (= 0 (length switch)) "" (concat "--switch " switch)))
-         (command (concat "opam config env --sexp " switch-arg))
+         (command (concat "opam config env --safe --sexp " switch-arg))
          (env (opam-shell-command-to-string command)))
     (when env
       (dolist (var (car (read-from-string env)))
@@ -156,7 +156,7 @@ let base_setup =
 (opam-update-env nil)
 
 (setq opam-share
-  (let ((reply (opam-shell-command-to-string "opam config var share")))
+  (let ((reply (opam-shell-command-to-string "opam config var share --safe")))
     (when reply (substring reply 0 -1))))
 
 (add-to-list 'load-path (concat opam-share "/emacs/site-lisp"))
