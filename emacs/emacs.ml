@@ -147,7 +147,7 @@ let base_setup =
   (let* ((switch-arg (if (= 0 (length switch)) "" (concat "--switch " switch)))
          (command (concat "opam config env --safe --sexp " switch-arg))
          (env (opam-shell-command-to-string command)))
-    (when env
+    (when (and env (not (string= env "")))
       (dolist (var (car (read-from-string env)))
         (setenv (car var) (cadr var))
         (when (string= (car var) "PATH")
@@ -155,7 +155,7 @@ let base_setup =
 
 (opam-update-env nil)
 
-(setq opam-share
+(defvar opam-share
   (let ((reply (opam-shell-command-to-string "opam config var share --safe")))
     (when reply (substring reply 0 -1))))
 
@@ -218,7 +218,7 @@ let base_setup =
   (autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
   (add-hook 'tuareg-mode-hook 'utop-minor-mode))
 
-(setq opam-tools
+(defvar opam-tools
   '(("tuareg" . opam-setup-tuareg)
     ("ocp-indent" . opam-setup-ocp-indent)
     ("ocp-index" . opam-setup-ocp-index)
@@ -233,7 +233,7 @@ let base_setup =
        (reply (opam-shell-command-to-string command-string)))
     (when reply (split-string reply))))
 
-(setq opam-tools-installed (opam-detect-installed-tools))
+(defvar opam-tools-installed (opam-detect-installed-tools))
 
 (defun opam-auto-tools-setup ()
   (interactive)
@@ -270,11 +270,11 @@ module Tuareg = struct
       Printf.sprintf {elisp|
 ;; Set to autoload tuareg from its original switch when not found in current
 ;; switch (don't load tuareg-site-file as it adds unwanted load-paths)
+(defun opam-tuareg-autoload (fct file doc args)
+  (let ((load-path (cons "/home/lg/.opam/4.02.3/share/emacs/site-lisp" load-path)))
+    (load file))
+  (apply fct args))
 (when (not (member "tuareg" opam-tools-installed))
-  (defun opam-tuareg-autoload (fct file doc args)
-    (let ((load-path (cons "%s" load-path)))
-      (load file))
-    (apply fct args))
   (defun tuareg-mode (&rest args)
     (opam-tuareg-autoload 'tuareg-mode "tuareg" "Major mode for editing OCaml code" args))
   (defun tuareg-run-ocaml (&rest args)
