@@ -362,7 +362,7 @@ let print_status editors =
   editors |> List.iter @@ fun e ->
   let module E = (val e: EditorConfig) in
   Printf.printf "\n## %s (%s)\n" E.name
-    (if E.check () then "installed" else "uninstalled");
+    (if E.check () then "installed" else "not installed");
   status e |> List.iter @@ fun (file, chunks) ->
   Printf.printf "%-39s\t%s" file @@
   String.concat "                                        " @@
