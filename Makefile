@@ -25,7 +25,7 @@ _build/ousMain.native: ALWAYS
 
 user-setup.install: ALWAYS
 	echo 'bin: "opam-user-setup"' > $@
-	echo 'share-root: [' >> $@
+	echo 'share_root: [' >> $@
 	for f in sublime/files/ocp-index/*; do \
 	  echo "  \"$$f\" { \"sublime/ocp-index/$$(basename $$f)\" }"; \
 	done >> $@
