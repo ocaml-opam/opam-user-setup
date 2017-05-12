@@ -271,7 +271,7 @@ module Tuareg = struct
 ;; Set to autoload tuareg from its original switch when not found in current
 ;; switch (don't load tuareg-site-file as it adds unwanted load-paths)
 (defun opam-tuareg-autoload (fct file doc args)
-  (let ((load-path (cons "/home/lg/.opam/4.02.3/share/emacs/site-lisp" load-path)))
+  (let ((load-path (cons "%s" load-path)))
     (load file))
   (apply fct args))
 (when (not (member "tuareg" opam-tools-installed))
