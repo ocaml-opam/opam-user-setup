@@ -165,7 +165,7 @@ if count(s:opam_available_tools,"ocp-indent") == 0
   source %S
 endif
 |vim}
-        (share_dir/"vim"/"syntax"/"ocp-indent.vim")
+        (share_dir/"ocp-indent"/"vim"/"indent"/"ocaml.vim")
     in
     [".vimrc", Text (lines_of_string contents)]
   let files = []
