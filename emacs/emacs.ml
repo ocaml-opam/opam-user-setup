@@ -131,13 +131,13 @@ let base_setup =
 
 (defun opam-shell-command-to-string (command)
   "Similar to shell-command-to-string, but returns nil unless the process
-  returned 0 (shell-command-to-string ignores return value)"
+  returned 0, and ignores stderr (shell-command-to-string ignores return value)"
   (let* ((return-value 0)
          (return-string
           (with-output-to-string
             (setq return-value
                   (with-current-buffer standard-output
-                    (process-file shell-file-name nil t nil
+                    (process-file shell-file-name nil '(t nil) nil
                                   shell-command-switch command))))))
     (if (= return-value 0) return-string nil)))
 
