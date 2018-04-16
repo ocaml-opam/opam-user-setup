@@ -45,7 +45,7 @@ let rec mkdir_p dir =
      Unix.mkdir dir 0o777)
 
 let lines_to_file ?(remove_if_empty=false) lines f =
-  if remove_if_empty && lines = [] then Unix.unlink f else
+  if remove_if_empty && lines = [] && Sys.file_exists f then Unix.unlink f else
   mkdir_p (Filename.dirname f);
   let oc = open_out f in
   List.iter (fun line -> output_string oc line; output_char oc '\n') lines;
