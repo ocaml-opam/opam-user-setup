@@ -139,8 +139,9 @@ endfunction
 let s:opam_configuration['merlin'] = function('OpamConfMerlin')
 
 let s:opam_packages = ["ocp-indent", "ocp-index", "merlin"]
-let s:opam_check_cmdline = ["opam list --installed --short --safe --color=never"] + s:opam_packages
-let s:opam_available_tools = split(system(join(s:opam_check_cmdline)))
+let s:opam_check_cmdline = "opam list --installed --short --safe --color=never " + join(s:opam_packages, " ")
+" was systemlist used here
+let s:opam_available_tools = split(system(s:opam_check_cmdline))
 for tool in s:opam_packages
   " Respect package order (merlin should be after ocp-index)
   if count(s:opam_available_tools, tool) > 0
