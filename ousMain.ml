@@ -68,7 +68,15 @@ module Chunk(E: EditorConfig) = struct
           | None -> aux (Line line :: acc) lines
           | Some ss ->
             let tool = Re.get ss 1 in
-            let md5 = Digest.from_hex (Re.get ss 2) in
+            let md5 =
+              (* Digest.from_hex doesn't exist in earlier OCaml releases *)
+              Scanf.sscanf (Re.get ss 2)
+                "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
+                (fun x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 xa xb xc xd xe xf ->
+                   let (!) = char_of_int in
+                   Printf.sprintf "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c"
+                     !x0!x1!x2!x3!x4!x5!x6!x7!x8!x9!xa!xb!xc!xd!xe!xf)
+            in
             let rec read_chunk chunk_contents = function
               | [] ->
                 msg "Error: unclosed configuration chunk for %S in %s at EOF"
