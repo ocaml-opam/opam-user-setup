@@ -9,12 +9,22 @@ let check () =
   List.exists Re.(execp @@ compile @@ str "+syntax")
     (lines_of_command "vim --version")
 
+let dotvimrc =
+  let ( / ) = Filename.concat in
+  let vimrc = "vimrc" in
+  let dotvimrc = "." ^ vimrc in
+  let dotvim = ".vim" in
+  if not (Sys.file_exists (home/dotvimrc)) &&
+     Sys.file_exists (home/dotvim/vimrc) then
+    dotvim/vimrc
+  else dotvimrc
+
 (*
  * Base template
  *)
 
 (* vim-sensible @ b30dcf387af977acfa21732592bfca05598b2188 *)
-let base_template = [ ".vimrc", lines_of_string
+let base_template = [ dotvimrc, lines_of_string
 {vim|
 " sensible.vim - Defaults everyone can agree on
 " Maintainer:   Tim Pope <http://tpo.pe/>
@@ -115,7 +125,7 @@ inoremap <C-U> <C-G>u<C-U>
  * Generic OPAM config
  *)
 
-let base_setup = [ ".vimrc", Text (lines_of_string
+let base_setup = [ dotvimrc, Text (lines_of_string
 {vim|
 let s:opam_share_dir = system("opam config var share")
 let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
@@ -167,7 +177,7 @@ endif
 |vim}
         (share_dir/"ocp-indent"/"vim"/"indent"/"ocaml.vim")
     in
-    [".vimrc", Text (lines_of_string contents)]
+    [dotvimrc, Text (lines_of_string contents)]
   let files = []
   let post_install = []
   let pre_remove = []
