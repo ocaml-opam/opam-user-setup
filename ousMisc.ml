@@ -15,7 +15,9 @@ type 'a stringmap = 'a StringMap.t
 
 let lines_of_string s =
   let rex = Re.(compile (char '\n')) in
-  Re_pcre.split ~rex (String.trim s)
+  let s = Re.(replace_string (compile @@ seq [ bos; rep space]) "" s) in
+  let s = Re.(replace_string (compile @@ seq [ rep space; eos]) "" s) in
+  Re_pcre.split ~rex s
 
 let lines_of_channel ic =
   let rec aux acc =
