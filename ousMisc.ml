@@ -2,9 +2,8 @@ open OusTypes
 
 let msg fmt = Printf.kprintf print_endline fmt
 
-external (@@) : ('a -> 'b) -> 'a -> 'b = "%apply"
-
-external (|>) : 'a -> ('a -> 'b) -> 'b = "%revapply"
+let (|>) a f = f a
+let (@@) f a = f a
 
 let (/) = Filename.concat
 
@@ -15,7 +14,9 @@ type 'a stringmap = 'a StringMap.t
 
 let lines_of_string s =
   let rex = Re.(compile (char '\n')) in
-  Re_pcre.split ~rex (String.trim s)
+  let s = Re.(replace_string (compile @@ seq [ bos; rep space]) "" s) in
+  let s = Re.(replace_string (compile @@ seq [ rep space; eos]) "" s) in
+  Re_pcre.split ~rex s
 
 let lines_of_channel ic =
   let rec aux acc =
