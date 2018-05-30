@@ -2,9 +2,8 @@ open OusTypes
 
 let msg fmt = Printf.kprintf print_endline fmt
 
-external (@@) : ('a -> 'b) -> 'a -> 'b = "%apply"
-
-external (|>) : 'a -> ('a -> 'b) -> 'b = "%revapply"
+let (|>) a f = f a
+let (@@) f a = f a
 
 let (/) = Filename.concat
 
