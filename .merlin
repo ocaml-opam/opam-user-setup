@@ -1,3 +1,8 @@
-S . emacs/ vim/
-B _build/*
-PKG unix re re.pcre
+S .
+S emacs/
+S vim/
+S gedit/
+S ocamltop/
+S sublime/
+B _build/**
+PKG unix re re.pcre cmdliner
