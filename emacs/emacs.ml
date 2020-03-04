@@ -345,9 +345,19 @@ module Merlin = struct
   let pre_remove = []
 end
 
+module Ocamlformat = struct
+  (* Handled dynamically, invalid in other switches *)
+  let name = "ocamlformat"
+  let chunks = []
+  let files = []
+  let post_install = []
+  let pre_remove = []
+end
+
 let tools = [
   (module Tuareg : ToolConfig);
   (module OcpIndent : ToolConfig);
   (module OcpIndex : ToolConfig);
   (module Merlin : ToolConfig);
+  (module Ocamlformat : ToolConfig);
 ]
