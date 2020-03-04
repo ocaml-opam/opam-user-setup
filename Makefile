@@ -31,6 +31,9 @@ user-setup.install: ALWAYS
 	done >> $@
 	echo ']' >> $@
 
-.PHONY: test
+.PHONY: test clean
 test:
 	make -C test
+
+clean:
+	ocamlbuild -clean && rm opam-user-setup
