@@ -18,6 +18,7 @@ SUBDIRS = ocamltop emacs vim sublime gedit
 _build/ousMain.native: ALWAYS
 	ocamlbuild -r \
 	  -tag debug \
+	  -tag bin_annot \
 	  -I . $(patsubst %,-I %,$(SUBDIRS)) \
 	  -use-ocamlfind $(patsubst %,-pkg %,$(PACKAGES)) \
 	  $(PP) \
@@ -31,6 +32,9 @@ user-setup.install: ALWAYS
 	done >> $@
 	echo ']' >> $@
 
-.PHONY: test
+.PHONY: test clean
 test:
 	make -C test
+
+clean:
+	ocamlbuild -clean && rm opam-user-setup

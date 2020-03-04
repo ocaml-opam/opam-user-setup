@@ -1,3 +1,5 @@
 _build
-opam-user-config
+*.native
+opam-user-setup
 test/*.tag
+user-setup.install
