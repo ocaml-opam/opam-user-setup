@@ -18,6 +18,7 @@ SUBDIRS = ocamltop emacs vim sublime gedit
 _build/ousMain.native: ALWAYS
 	ocamlbuild -r \
 	  -tag debug \
+	  -tag bin_annot \
 	  -I . $(patsubst %,-I %,$(SUBDIRS)) \
 	  -use-ocamlfind $(patsubst %,-pkg %,$(PACKAGES)) \
 	  $(PP) \
