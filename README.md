@@ -55,13 +55,13 @@ Without argument, the current setup status will be checked and printed.
 This should reflect the current state of support for editors and tools. More may
 be added.
 
-|editor |base template|ocaml   |ocp-indent|merlin|ocp-index|
-|-------|-------------|--------|----------|------|---------|
-|emacs  |yes          |yes     |yes       |yes   |yes      |
-|vim    |yes          |yes     |yes       |yes   |yes      |
-|sublime|no           |built-in|no        |no    |yes      |
-|gedit  |not yet      |        |          |      |         |
-|eclipse|not yet      |        |          |      |         |
+|editor |base template|ocaml   |ocp-indent|merlin|ocp-index|dune|
+|-------|-------------|--------|----------|------|---------|----|
+|emacs  |yes          |yes     |yes       |yes   |yes      |yes |
+|vim    |yes          |yes     |yes       |yes   |yes      |no  |
+|sublime|no           |built-in|no        |no    |yes      |no  |
+|gedit  |not yet      |        |          |      |         |no  |
+|eclipse|not yet      |        |          |      |         |no  |
 
 Current support in emacs and vim (only) is dynamic, which means that the editor
 will adapt to the current opam switch when run (using e.g. merlin only when
