@@ -225,11 +225,17 @@ let base_setup =
   (autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
   (add-hook 'tuareg-mode-hook 'utop-minor-mode))
 
+(defun opam-setup-dune ()
+  (load "dune.el")
+  (add-to-list 'auto-mode-alist '("/dune\\'" . dune-mode))
+  )
+
 (defvar opam-tools
   '(("tuareg" . opam-setup-tuareg)
     ("ocp-indent" . opam-setup-ocp-indent)
     ("ocp-index" . opam-setup-ocp-index)
     ("merlin" . opam-setup-merlin)
+    ("dune" . opam-setup-dune)
     ("utop" . opam-setup-utop)))
 
 (defun opam-detect-installed-tools ()
