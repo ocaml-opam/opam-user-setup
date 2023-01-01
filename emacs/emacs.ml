@@ -312,7 +312,7 @@ module OcpIndent = struct
       let el = share_dir / "emacs" / "site-lisp" / "ocp-indent.el" in
       Printf.sprintf {elisp|
 ;; Load ocp-indent from its original switch when not found in current switch
-(when (not (assoc "ocp-indent" opam-tools-installed))
+(when (not (member "ocp-indent" opam-tools-installed))
   (autoload 'ocp-setup-indent "%s" "Improved indentation for Tuareg mode")
   (autoload 'ocp-indent-caml-mode-setup "%s" "Improved indentation for Caml mode")
   (add-hook 'tuareg-mode-hook 'ocp-setup-indent t)
