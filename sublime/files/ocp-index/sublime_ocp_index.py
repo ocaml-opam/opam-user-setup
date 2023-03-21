@@ -33,7 +33,7 @@ class SublimeOCPIndex():
     def run_ocp(self, command, includes, module, query, context, moreArgs, settings):
         bin_path = which('ocp-index')
         if bin_path is None:
-            opam_process = subprocess.Popen('opam config var bin', stdout=subprocess.PIPE, shell=True)
+            opam_process = subprocess.Popen('opam var bin', stdout=subprocess.PIPE, shell=True)
             bin_path = opam_process.stdout.read().decode('utf-8').rstrip() + '/ocp-index'
 
         args = [bin_path, command]

@@ -35,4 +35,4 @@ ENV OPAMVERBOSE 1
 ENV OCAMLRUNPARAM b
 RUN opam pin add user-setup ous/
 RUN opam user-setup install
-RUN cd ous && opam config exec -- make
+RUN cd ous && opam exec -- make

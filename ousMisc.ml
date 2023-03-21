@@ -53,7 +53,7 @@ let lines_to_file ?(remove_if_empty=false) lines f =
   close_out oc
 
 let opam_var v =
-  let cmd = Printf.sprintf "opam config var %s" v in
+  let cmd = Printf.sprintf "opam var %s" v in
   match lines_of_command cmd with
   | [value] -> value
   | _ -> failwith (Printf.sprintf "Bad answer from '%s'" cmd)

@@ -152,7 +152,7 @@ let base_setup =
        (split-string (opam-shell-command-to-string "opam switch list -s --safe") "\n")
        nil t nil nil default))))
   (let* ((switch-arg (if (= 0 (length switch)) "" (concat "--switch " switch)))
-         (command (concat "opam config env --safe --sexp " switch-arg))
+         (command (concat "opam env --safe --sexp " switch-arg))
          (env (opam-shell-command-to-string command)))
     (when (and env (not (string= env "")))
       (dolist (var (car (read-from-string env)))
@@ -163,7 +163,7 @@ let base_setup =
 (opam-update-env nil)
 
 (defvar opam-share
-  (let ((reply (opam-shell-command-to-string "opam config var share --safe")))
+  (let ((reply (opam-shell-command-to-string "opam var share --safe")))
     (when reply (substring reply 0 -1))))
 
 (add-to-list 'load-path (concat opam-share "/emacs/site-lisp"))

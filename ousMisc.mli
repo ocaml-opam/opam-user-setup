@@ -31,7 +31,7 @@ val lines_of_command: string -> lines
 (** Writes a list of lines to a file. [remove_if_empty] defaults to false. *)
 val lines_to_file: ?remove_if_empty:bool -> lines -> string -> unit
 
-(** Query OPAM for a variable (see 'opam config list') *)
+(** Query OPAM for a variable (see 'OPAMCLI=2.0 opam config list' or 'opam var --cli 2.1') *)
 val opam_var: string -> string
 
 (** The current user's home directory (as given by environment variable HOME) *)

@@ -127,7 +127,7 @@ inoremap <C-U> <C-G>u<C-U>
 
 let base_setup = [ dotvimrc, Text (lines_of_string
 {vim|
-let s:opam_share_dir = system("opam config var share")
+let s:opam_share_dir = system("opam var share")
 let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
 
 let s:opam_configuration = {}
