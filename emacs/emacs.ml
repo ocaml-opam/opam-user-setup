@@ -225,12 +225,19 @@ let base_setup =
   (autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
   (add-hook 'tuareg-mode-hook 'utop-minor-mode))
 
+(defun opam-setup-ocamlformat ()
+  (load (concat opam-share "/emacs/site-lisp/ocamlformat"))
+  (opam-setup-add-ocaml-hook
+    (lambda ()
+      (define-key tuareg-mode-map (kbd "C-c C-f") #'ocamlformat))))
+
 (defvar opam-tools
   '(("tuareg" . opam-setup-tuareg)
     ("ocp-indent" . opam-setup-ocp-indent)
     ("ocp-index" . opam-setup-ocp-index)
     ("merlin" . opam-setup-merlin)
-    ("utop" . opam-setup-utop)))
+    ("utop" . opam-setup-utop)
+    ("ocamlformat" . opam-setup-ocamlformat)))
 
 (defun opam-detect-installed-tools ()
   (let*
@@ -345,9 +352,19 @@ module Merlin = struct
   let pre_remove = []
 end
 
+module Ocamlformat = struct
+  (* Handled dynamically, invalid in other switches *)
+  let name = "ocamlformat"
+  let chunks = []
+  let files = []
+  let post_install = []
+  let pre_remove = []
+end
+
 let tools = [
   (module Tuareg : ToolConfig);
   (module OcpIndent : ToolConfig);
   (module OcpIndex : ToolConfig);
   (module Merlin : ToolConfig);
+  (module Ocamlformat : ToolConfig);
 ]
