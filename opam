@@ -1,4 +1,4 @@
-opam-version: "1.2"
+opam-version: "2.0"
 name: "user-setup"
 version: "0.7"
 maintainer: "Louis Gesbert <louis.gesbert@ocamlpro.com>"
@@ -6,17 +6,19 @@ authors: "Louis Gesbert <louis.gesbert@ocamlpro.com>"
 homepage: "https://github.com/OCamlPro/opam-user-setup"
 bug-reports: "https://github.com/OCamlPro/opam-user-setup/issues"
 license: "ISC"
-dev-repo: "https://github.com/OCamlPro/opam-user-setup.git"
+dev-repo: "git+https://github.com/OCamlPro/opam-user-setup.git"
 build: [make]
 depends: [
+  "ocaml" {>= "3.12.1"}
   "ocamlfind" {build}
   "cmdliner"
   "re"
 ]
 depopts: ["tuareg" "merlin" "ocp-indent" "ocp-index"]
-available: [ocaml-version >= "3.12.1"]
+available: opam-version >= "2.1"
 post-messages: [
   "To setup or update your editors, run 'opam user-setup install'."
     {success}
 ]
-tags: [ "org:ocamlpro" "flags:plugin" ]
+tags: [ "org:ocamlpro" ]
+flags: plugin
