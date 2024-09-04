@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "user-setup"
-version: "0.7"
+version: "0.8"
 maintainer: "Louis Gesbert <louis.gesbert@ocamlpro.com>"
 authors: "Louis Gesbert <louis.gesbert@ocamlpro.com>"
 homepage: "https://github.com/OCamlPro/opam-user-setup"
