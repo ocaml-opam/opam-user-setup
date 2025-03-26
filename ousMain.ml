@@ -392,7 +392,7 @@ let tool_names_arg =
     | [] -> installed_tools ()
     | tools -> tools
   in
-  Term.(pure aux $ arg)
+  Term.(const aux $ arg)
 
 let editors_arg =
   let editors_enum =
@@ -408,11 +408,11 @@ let editors_arg =
     let names = List.flatten names in
     List.filter (fun e -> List.mem (editor_name e) names) editors
   in
-  Term.(pure aux $ arg)
+  Term.(const aux $ arg)
 
 let default_all_editors_arg =
   let aux eds = if eds = [] then editors else eds in
-  Term.(pure aux $ editors_arg)
+  Term.(const aux $ editors_arg)
 
 let default_installed_editors_arg =
   let aux eds =
@@ -422,7 +422,7 @@ let default_installed_editors_arg =
         editors
     else eds
   in
-  Term.(pure aux $ editors_arg)
+  Term.(const aux $ editors_arg)
 
 let force_arg =
   let doc = "Install or remove configuration even when manual modifications \
@@ -443,8 +443,8 @@ let dry_run_arg =
 
 let status_cmd =
   let doc = "displays the current installation status." in
-  Term.(pure print_status $ default_all_editors_arg),
-  Term.info "status" ~doc
+  Cmd.v (Cmd.info "status" ~doc)
+    Term.(const print_status $ default_all_editors_arg)
 
 let install_cmd =
   let doc = "Install configuration for the detected or specified tools" in
@@ -452,10 +452,10 @@ let install_cmd =
     editors |> List.iter @@ fun e ->
     setup_editor tool_names force keep dry_run e
   in
-  Term.(pure aux
-        $default_installed_editors_arg $tool_names_arg
-        $force_arg $keep_arg $dry_run_arg),
-  Term.info "install" ~doc
+  Cmd.v (Cmd.info "install" ~doc)
+    Term.(const aux
+          $default_installed_editors_arg $tool_names_arg
+          $force_arg $keep_arg $dry_run_arg)
 
 let remove_cmd =
   let doc = "Remove configuration of tools. If no tools are specified, all \
@@ -465,16 +465,11 @@ let remove_cmd =
     editors |> List.iter @@ fun e ->
     remove_editor tool_names force dry_run e
   in
-  Term.(pure aux $default_all_editors_arg $tool_names_arg $force_arg $dry_run_arg),
-  Term.info "remove" ~doc
+  Cmd.v (Cmd.info "remove" ~doc)
+    Term.(const aux $default_all_editors_arg $tool_names_arg $force_arg $dry_run_arg)
 
 let default_cmd =
-  fst status_cmd,
-  Term.info "opam-user-setup" ~version:"0.8"
+  Cmd.info "opam-user-setup" ~version:"0.8"
 
 let () =
-  match
-    Term.eval_choice default_cmd [status_cmd; install_cmd; remove_cmd]
-  with
-  | `Error _ -> exit 1
-  | _ -> exit 0
+  exit (Cmd.eval (Cmd.group default_cmd [status_cmd; install_cmd; remove_cmd]))
