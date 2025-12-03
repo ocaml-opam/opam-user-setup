@@ -2,8 +2,8 @@ name: Builds, tests & co
 
 on:
   - push
-    branches:
-      - 'master'
+      branches:
+        - 'master'
   - pull_request
 
 permissions: read-all
