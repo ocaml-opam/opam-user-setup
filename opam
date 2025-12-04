@@ -9,10 +9,10 @@ license: "ISC"
 dev-repo: "git+https://github.com/ocaml-opam/opam-user-setup.git"
 build: [make]
 depends: [
-  "ocaml" {>= "3.12.1"}
+  "ocaml" {>= "4.08"}
   "ocamlfind" {build}
   "ocamlbuild" {build}
-  "cmdliner" { < "2.0.0" }
+  "cmdliner" {>= "1.1.0"}
   "re" {>= "1.7.2"}
 ]
 conflicts: [
